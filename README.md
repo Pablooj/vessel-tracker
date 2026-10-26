@@ -46,7 +46,7 @@ Edit `config.yaml`:
 - Callouts use two distance tiers: labels in dense clusters are automatically split between the closer tier and a farther tier, with most labels kept closer. Placement avoids overlaps and strongly prefers label boxes that sit over the largest mainland land area rather than islands or water.
 - `ais.source` — `openwaters` or `kystverket`
 - `display.eink` — grayscale, high-contrast basemap with light-grey land shading
-OSM coastline ways (`natural=coastline`) are cached under `.cache/coastline` and used to render the land shading. Attribution: © OpenStreetMap contributors.
+OSM coastline ways (`natural=coastline`) are cached under `.cache/coastline` and used to render the land shading. The current map extent's coastline snapshot is bundled under `assets/coastline` so scheduled renders can still work when Overpass is unavailable. Attribution: © OpenStreetMap contributors.
 
 ## Publish a live-updating webpage
 

@@ -41,6 +41,13 @@ jobs:
           key: coastline-${{ hashFiles('config.yaml') }}
           restore-keys: coastline-
 
+      - name: Seed coastline cache
+        run: |
+          mkdir -p .cache/coastline
+          if [ ! -f .cache/coastline/coastline_3d697c8626a6.json ]; then
+            cp assets/coastline/coastline_3d697c8626a6.json .cache/coastline/
+          fi
+
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 
