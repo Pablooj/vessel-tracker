@@ -1,0 +1,6 @@
+matplotlib>=3.6,<3.8
+numpy>=1.21,<1.25
+Pillow>=9,<11
+PyYAML>=6
+requests>=2.28
+websockets>=11,<13

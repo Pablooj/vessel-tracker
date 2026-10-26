@@ -1,0 +1,59 @@
+name: Publish vessel map
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Cache coastline data
+        uses: actions/cache@v4
+        with:
+          path: .cache/coastline
+          key: coastline-${{ hashFiles('config.yaml') }}
+          restore-keys: coastline-
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Render vessel map
+        env:
+          MPLBACKEND: Agg
+        run: |
+          mkdir -p site
+          python -m vessel_tracker --save site/preview.png
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > site/updated.txt
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

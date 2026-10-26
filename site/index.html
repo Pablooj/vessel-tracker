@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Vessel tracker</title>
+    <style>
+      :root {
+        font-family: system-ui, sans-serif;
+        color: #202124;
+        background: #f3f4f6;
+      }
+
+      body {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      main {
+        padding: 1rem;
+        background: white;
+        border: 1px solid #d5d8dc;
+        border-radius: 0.5rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.25rem;
+      }
+
+      #updated {
+        margin: 0 0 1rem;
+        color: #555;
+        font-size: 0.9rem;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      footer {
+        margin-top: 0.75rem;
+        color: #555;
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Vessel tracker</h1>
+      <p id="updated" aria-live="polite">Loading latest update time…</p>
+      <img id="map" src="preview.png" alt="Latest vessel tracker map">
+      <footer>Map coastline data © OpenStreetMap contributors.</footer>
+    </main>
+    <script>
+      const map = document.getElementById("map");
+      const updated = document.getElementById("updated");
+
+      async function refreshMap() {
+        const cacheBuster = Date.now();
+        map.src = `preview.png?t=${cacheBuster}`;
+
+        try {
+          const response = await fetch(`updated.txt?t=${cacheBuster}`, {
+            cache: "no-store",
+          });
+          if (!response.ok) {
+            throw new Error(`Update timestamp request failed: ${response.status}`);
+          }
+          const timestamp = (await response.text()).trim();
+          updated.textContent = `Last updated: ${new Date(timestamp).toLocaleString()}`;
+        } catch (error) {
+          updated.textContent = "Update time unavailable; retrying shortly.";
+          console.error(error);
+        }
+      }
+
+      refreshMap();
+      window.setInterval(refreshMap, 60_000);
+    </script>
+  </body>
+</html>
